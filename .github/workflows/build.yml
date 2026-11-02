@@ -3,6 +3,8 @@ name: Build Mod
 on:
   workflow_dispatch:
   push:
+    branches:
+      - main
 
 jobs:
   build:
@@ -18,14 +20,17 @@ jobs:
 
       - name: Compile Code
         run: |
-          find . -name "Android.mk" -execdir ndk-build \;
+          # Use parallel builds (-j) for faster compilation
+          find . -name "Android.mk" -execdir ndk-build -j$(nproc) \;
 
       - name: Package Qmod File
         run: |
-          zip -r bat-cheat-mod.qmod . -i "*.so" "*.json"
+          # Ensure file consistency by explicitly defining includes
+          zip -r bat-cheat-mod.qmod . -i "*.so" "*.json" -x ".git/*" ".github/*"
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: qmod-artifact
           path: bat-cheat-mod.qmod
+          retention-days: 7
