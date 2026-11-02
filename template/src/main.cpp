@@ -1,36 +1,31 @@
 #include "main.hpp"
 
-#include "scotland2/shared/modloader.h"
+// 1. This creates your Menu Toggle switch. 
+// Set it to 'true' to start with the cheat turned ON when you boot up the game.
+bool myMenuToggle = true; 
 
-static modloader::ModInfo modInfo{MOD_ID, VERSION, 0};
-// Stores the ID and version of our mod, and is sent to
-// the modloader upon startup
+// 2. This links the exact address to the Quest game engine
+MAKE_HOOK_MATCH(Baseball_GetVelocityWhenHitBat, 0x19ED48C, Vector3, int* self, Vector3 ballPosition, Vector3 cachedVelocity, int* collision, float* hitSpeed) {
 
-// Loads the config from disk using our modInfo, then returns it for use
-// other config tools such as config-utils don't use this config, so it can be
-// removed if those are in use
-Configuration &getConfig() {
-  static Configuration config(modInfo);
-  return config;
+    // Let the game calculate normal launch physics first
+    Vector3 originalVelocity = Baseball_GetVelocityWhenHitBat(self, ballPosition, cachedVelocity, collision, hitSpeed);
+
+    // 3. Check our menu switch status
+    if (myMenuToggle == true) {
+        // If the toggle is active, boost the speed by 50x!
+        return originalVelocity * 50.0f; 
+    }
+
+    // If the toggle is turned off, return standard baseball rules
+    return originalVelocity; 
 }
 
-// Called at the early stages of game loading
-MOD_EXTERN_FUNC void setup(CModInfo *info) noexcept {
-  *info = modInfo.to_c();
-
-  getConfig().Load();
-
-  // File logging
-  Paper::Logger::RegisterFileContextId(PaperLogger.tag);
-
-  PaperLogger.info("Completed setup!");
+void setup(ModInfo& info) {
+    info.id = "gorillabaseball_cheat";
+    info.version = "1.0.0";
 }
 
-// Called later on in the game loading - a good time to install function hooks
-MOD_EXTERN_FUNC void late_load() noexcept {
-  il2cpp_functions::Init();
-
-  PaperLogger.info("Installing hooks...");
-
-  PaperLogger.info("Installed all hooks!");
+void load() {
+    // 4. This physically activates your address hook inside your Quest game code
+    INSTALL_HOOK(Baseball_GetVelocityWhenHitBat);
 }
