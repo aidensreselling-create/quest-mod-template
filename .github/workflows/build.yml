@@ -1,0 +1,29 @@
+name: Build Mod
+
+on:
+  workflow_dispatch:
+  push:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Set up NDK
+      uses: nxtlvlsoftware/android-ndk-action@v1
+      with:
+        api: 24
+
+    - name: Compile Mod
+      run: find . -name "Android.mk" -execdir ndk-build \;
+
+    - name: Create Zip File
+      run: zip -r bat-cheat-mod.qmod . -i "*.so" -i "*.json"
+
+    - name: Save Mod File
+      uses: actions/upload-artifact@v4
+      with:
+        name: qmod-artifact
+        path: bat-cheat-mod.qmod
