@@ -1,0 +1,8 @@
+Android.mk
+LOCAL_PATH := $(call my-dir)
+include $(CLEAR_VARS)
+LOCAL_MODULE := batcheat
+LOCAL_SRC_FILES := src/main.cpp
+LOCAL_LDLIBS := -llog
+LOCAL_CFLAGS := -std=c++2a -I./include
+include $(BUILD_SHARED_MODULE)
