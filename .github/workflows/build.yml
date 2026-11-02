@@ -9,13 +9,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     
-uses: actions/checkout@v3
+uses: actions/checkout@v4
 
     
-name: Set up ndk
-    uses: android-actions/setup-android-ndk@v1
+name: Set up Android NDK
+    uses: nxtlvlsoftware/android-ndk-action@v1
     with:
-      ndk-version: r25c
+      api: 24
 
     
 name: Compile Code
@@ -29,42 +29,7 @@ name: Package Qmod File
 
     
 name: Upload Artifact
-    uses: actions/upload-artifact@v3
-    with:
-      name: qmod-artifact
-      path: bat-cheat-mod.qmod
-name: Build Mod
-
-on:
-  workflow_dispatch:
-  push:
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-    
-uses: actions/checkout@v3
-
-    
-name: Set up ndk
-    uses: android-actions/setup-android-ndk@v1
-    with:
-      ndk-version: r25c
-
-    
-name: Compile Code
-    run: |
-      find . -name "Android.mk" -execdir ndk-build ;
-
-    
-name: Package Qmod File
-    run: |
-      zip -r bat-cheat-mod.qmod . -i ".so" -i ".json"
-
-    
-name: Upload Artifact
-    uses: actions/upload-artifact@v3
+    uses: actions/upload-artifact@v4
     with:
       name: qmod-artifact
       path: bat-cheat-mod.qmod
