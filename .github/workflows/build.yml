@@ -8,28 +8,24 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    
-uses: actions/checkout@v4
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-    
-name: Set up Android NDK
-    uses: nxtlvlsoftware/android-ndk-action@v1
-    with:
-      api: 24
+      - name: Set up Android NDK
+        uses: nxtlvlsoftware/android-ndk-action@v1
+        with:
+          api: 24
 
-    
-name: Compile Code
-    run: |
-      find . -name "Android.mk" -execdir ndk-build ;
+      - name: Compile Code
+        run: |
+          find . -name "Android.mk" -execdir ndk-build \;
 
-    
-name: Package Qmod File
-    run: |
-      zip -r bat-cheat-mod.qmod . -i ".so" -i ".json"
+      - name: Package Qmod File
+        run: |
+          zip -r bat-cheat-mod.qmod . -i "*.so" "*.json"
 
-    
-name: Upload Artifact
-    uses: actions/upload-artifact@v4
-    with:
-      name: qmod-artifact
-      path: bat-cheat-mod.qmod
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: qmod-artifact
+          path: bat-cheat-mod.qmod
